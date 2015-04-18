@@ -6,14 +6,24 @@
 package com.mycompany.flickrssdd;
 
 import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
 import com.flickr4java.flickr.REST;
 import com.flickr4java.flickr.RequestContext;
+import com.flickr4java.flickr.photos.upload.Ticket;
+import com.flickr4java.flickr.photos.upload.UploadInterface;
+import com.flickr4java.flickr.uploader.UploadMetaData;
+import com.flickr4java.flickr.uploader.Uploader;
 import com.urjc.java.pruautorizacionesflickr.AutorizacionesFlickr;
 import java.awt.Component;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -26,6 +36,7 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
 
     protected Flickr fl;
     AutorizacionesFlickr autorizacionesFlickr;
+    protected volatile boolean finishUpload;
 
     //method add defined in the mother object
     public void add(Component c, int x, int y, int sX, int sY) {
@@ -49,7 +60,7 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
         RequestContext requestContext
                 = RequestContext.getRequestContext();
         requestContext.setAuth(autorizacionesFlickr.getAuth());
-
+        finishUpload = false;
         JFileChooser fchooser = new JFileChooser();
         fchooser.setMultiSelectionEnabled(true);
         int result = fchooser.showOpenDialog(this);
@@ -66,7 +77,7 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
                         PhotoTags pt = new PhotoTags();
                         pt.file = f;
                         pt.title = jd.obtenerTitulo();
-                        if(pt.title.isEmpty()) {
+                        if (pt.title.isEmpty()) {
                             pt.title = pt.file.getName();
                         }
                         pt.description = jd.obtenerDescripcion();
@@ -75,7 +86,59 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
                         pts.add(pt);
                     }
                 }
-                
+                Uploader upd = fl.getUploader();
+                Set<String> tickets = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>()); //new HashSet<>();
+                Runnable task = () -> {
+                    pts.stream().parallel().forEach((pt) -> {
+                        try {
+                            UploadMetaData meta = new UploadMetaData();
+                            meta.setAsync(true);
+                            meta.setTitle(pt.title);
+                            meta.setDescription(pt.description);
+                            meta.setTags(pt.tags);
+                            RequestContext.getRequestContext().setAuth(autorizacionesFlickr.getAuth());
+                            String ticket = upd.upload(pt.file, meta);
+                            tickets.add(ticket);
+                            System.out.println(ticket);
+                        } catch (FlickrException ex) {
+                            Logger.getLogger(SubirNuevoAlbum.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    });
+                };
+                new Thread(task).start();
+                /*Runnable task2;
+                 task2 = new Runnable() {
+                    
+                 public void run() {*/
+                while (true) {
+                    try {
+                        Thread.sleep(3000);
+                        UploadInterface updInterface = new UploadInterface(autorizacionesFlickr.getApi_key(),
+                                autorizacionesFlickr.getSecret(),
+                                new REST());
+
+                        RequestContext.getRequestContext().setAuth(autorizacionesFlickr.getAuth());
+
+                        List<Ticket> checkTickets = updInterface.checkTickets(tickets);
+                        Long completed = checkTickets.stream().filter(t -> t.hasCompleted()).count();
+                        Long notCompleted = pts.size() - completed;
+
+                        String str = "Completed " + completed + " of " + pts.size();
+                        System.out.println(str);
+                        
+                        if (completed == pts.size()) {
+                            finishUpload = true;
+                            break;
+                        }
+
+                    } catch (FlickrException | InterruptedException ex) {
+                        Logger.getLogger(SubirNuevoAlbum.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                /*}
+                 };
+                 new Thread(task2).start();*/
+
                 JPanel panel = new JPanel();
                 panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
                 pts.stream().map((pt) -> {
@@ -88,46 +151,10 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
                 }).forEach((ip) -> {
                     panel.add(ip);
                 });
-                
-                jScrollPane1.setViewportView(panel);
-                /*Uploader upd = fl.getUploader();
-                 Set<String> tickets = new HashSet<>();
-                 //Runnable task = () -> {
-                 pts.stream().forEach((pt) -> {
-                 try {
-                 UploadMetaData meta = new UploadMetaData();
-                 meta.setAsync(true);
-                 meta.setTitle(pt.title);
-                 meta.setDescription(pt.description);
-                 meta.setTags(pt.tags);
-                 String ticket = upd.upload(pt.file, meta);
-                 tickets.add(ticket);
-                 System.out.println(ticket);
-                 } catch (FlickrException ex) {
-                 Logger.getLogger(SubirNuevoAlbum.class.getName()).log(Level.SEVERE, null, ex);
-                 }
-                 });*/
-                // };
-                //new Thread(task).start();
-                /*Runnable task2 = () -> {
-                 while (true) {
-                 try {
-                 List<Ticket> checkTickets = new UploadInterface(autorizacionesFlickr.getApi_key(),
-                 autorizacionesFlickr.getSecret(),
-                 new REST()).checkTickets(tickets);
-                 //fl.getUploadInterface().checkTickets(tickets);
 
-                 checkTickets.stream().forEach((t) -> {
-                 System.out.println(t.getStatus());
-                 });
-                 Thread.sleep(3000);
-                 } catch (FlickrException | InterruptedException ex) {
-                 Logger.getLogger(SubirNuevoAlbum.class.getName()).log(Level.SEVERE, null, ex);
-                 }
-                 }
-                 };
-                 new Thread(task2).start();*/
+                jScrollPane1.setViewportView(panel);
             }
+
         }
     }
 

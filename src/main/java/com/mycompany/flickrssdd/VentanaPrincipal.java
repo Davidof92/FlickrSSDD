@@ -30,9 +30,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      * Creates new form VentanaPrincipal
      */
     public VentanaPrincipal() {
-        //try {
+        try {
             initComponents();
-            /*autorizacionesFlickr = new AutorizacionesFlickr();
+            autorizacionesFlickr = new AutorizacionesFlickr();
             fl = new Flickr(autorizacionesFlickr.getApi_key(),
                     autorizacionesFlickr.getSecret(),
                     new REST());
@@ -40,14 +40,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     = RequestContext.getRequestContext();
             requestContext.setAuth(autorizacionesFlickr.getAuth());
 
-            Photosets list = fl.getPhotosetsInterface().getList("8690161@N08");
+            Photosets list = fl.getPhotosetsInterface().getList(autorizacionesFlickr.getUserID());
             photosets = list.getPhotosets();
             photosets.stream().forEach((ps) -> {
                 this.jComboBox1.addItem(ps.getId() + " - " + ps.getTitle());
             });
         } catch (FlickrException ex) {
             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+        }
     }
 
     /**
@@ -63,6 +63,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox();
         jScrollPane2 = new javax.swing.JScrollPane();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -81,6 +82,13 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setText("Crear Album");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -94,7 +102,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jComboBox1, 0, 466, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1)))
                 .addContainerGap())
         );
@@ -107,10 +116,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(3, 3, 3)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -125,6 +135,25 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         SubirNuevoAlbum sna = new SubirNuevoAlbum(this, true);
         sna.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        AniadirAlbum aa = new AniadirAlbum(this, true);
+        aa.setVisible(true);
+        if (aa.isSave()) {
+            try {
+                String nameAlbum = aa.getAlbumName();
+                fl.getPhotosetsInterface().create(nameAlbum, "", "");
+                this.jComboBox1.removeAllItems();
+                Photosets list = fl.getPhotosetsInterface().getList(autorizacionesFlickr.getUserID());
+                photosets = list.getPhotosets();
+                photosets.stream().forEach((ps) -> {
+                    this.jComboBox1.addItem(ps.getId() + " - " + ps.getTitle());
+                });
+            } catch (FlickrException ex) {
+                Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -163,6 +192,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane2;

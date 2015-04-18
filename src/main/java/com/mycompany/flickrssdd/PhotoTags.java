@@ -6,6 +6,7 @@
 package com.mycompany.flickrssdd;
 
 import java.io.File;
+import java.util.Collection;
 
 /**
  *
@@ -15,4 +16,5 @@ public class PhotoTags {
     public File file;
     public String title;
     public String description;
+    public Collection<String> tags;
 }

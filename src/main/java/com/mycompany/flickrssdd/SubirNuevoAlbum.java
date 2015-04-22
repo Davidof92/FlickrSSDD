@@ -17,10 +17,10 @@ import com.flickr4java.flickr.uploader.Uploader;
 import com.urjc.java.pruautorizacionesflickr.AutorizacionesFlickr;
 import java.awt.Component;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.shape.Path;
 import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -74,6 +75,12 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
             File[] files = fchooser.getSelectedFiles();
             if (files.length > 0) {
                 try {
+                    JdialogPyS pys = new JdialogPyS(null, true);
+                    pys.setVisible(true);
+                    String seguridad = pys.getSeguridad();
+                    String contenido = pys.getContenido();
+                    String privacidad = pys.getPrivacidad();
+                    
                     JDialog1 jd = new JDialog1(null, true);
                     for (File f : files) {
                         jd.setImage(f.getAbsolutePath());
@@ -146,12 +153,18 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
                     }, new Date(), 3000l);
                     
                     finishUpload.await();
+                    
+                    //CREAR FORMULARIO ALBUM
+                    CrearAlbumDialog crearAlbum = new CrearAlbumDialog(null, true);
+                    crearAlbum.setNombreAlbum(pts.get(0).file.getParentFile().getName());
+                    crearAlbum.setVisible(true);
+                    
                     try {
                         List<String> ids = new LinkedList<>();
                         updInterface.checkTickets(tickets).stream().forEach(t -> ids.add(t.getPhotoId()));
                         
                         RequestContext.getRequestContext().setAuth(autorizacionesFlickr.getAuth());
-                        Photoset photoset = fl.getPhotosetsInterface().create("dfgfdg", "Descripción", ids.get(0));
+                        Photoset photoset = fl.getPhotosetsInterface().create(crearAlbum.getNombreAlbum(), crearAlbum.getDescripcionAlbum(), ids.get(0));
                         ids.remove(0);
                         ids.parallelStream().forEach(id -> {
                             try {
@@ -184,6 +197,8 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
                 }
             }
 
+        }else{
+            this.dispose();
         }
     }
 

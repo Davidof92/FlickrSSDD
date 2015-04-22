@@ -4,13 +4,20 @@ import com.flickr4java.flickr.Flickr;
 import com.flickr4java.flickr.FlickrException;
 import com.flickr4java.flickr.REST;
 import com.flickr4java.flickr.RequestContext;
+import com.flickr4java.flickr.photos.Photo;
+import com.flickr4java.flickr.photos.PhotoList;
 import com.flickr4java.flickr.photosets.Photoset;
 import com.flickr4java.flickr.photosets.Photosets;
+import com.flickr4java.flickr.photosets.PhotosetsInterface;
 import com.urjc.java.pruautorizacionesflickr.AutorizacionesFlickr;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.image.BufferedImage;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -46,7 +53,41 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             this.jComboBox1.removeAllItems();
             this.jComboBox1.addItem("-----------------------------------------------------------------------------------------------------------------------------");
             photosets.stream().forEach((ps) -> {
-                this.jComboBox1.addItem(ps.getId() + " - " + ps.getTitle());
+                ContenedorAlbum contenedor = new ContenedorAlbum(ps.getId(), ps.getTitle());
+                this.jComboBox1.addItem(contenedor);
+            });
+            jComboBox1.addItemListener(new ItemListener() {
+
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    if (e.getStateChange() == ItemEvent.SELECTED) {
+                        if (jComboBox1.getSelectedIndex() > 0) {
+                            System.out.println("SELECTED");
+                            System.out.println("Leemos imágenes del album");
+                            ContenedorAlbum album = (ContenedorAlbum) jComboBox1.getSelectedItem();
+                            System.out.println(album);
+                            imgs.removeAll();
+
+                            PhotosetsInterface photosetsInterface = fl.getPhotosetsInterface();
+                            try {
+                                PhotoList<Photo> photoList = photosetsInterface.getPhotos(album.getId(), new HashSet<String>(), 0, 0, 0);
+                                DefaultListModel modelo = new DefaultListModel();
+                                photoList.stream().forEach((pl) -> {
+                                    ContenedorFoto cf = new ContenedorFoto(pl.getTitle(), pl);
+                                    modelo.addElement(cf);
+                                });
+                                imgs.setModel(modelo);
+                                //fl.getPhotosetsInterface().getPhotosetCount("");
+                            } catch (FlickrException ex) {
+                                Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else {
+                            imgs.removeAll();
+                            DefaultListModel modelo = new DefaultListModel();
+                            imgs.setModel(modelo);
+                        }
+                    }
+                }
             });
         } catch (FlickrException ex) {
             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
@@ -67,7 +108,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
+        imgs = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -98,12 +139,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
 
-        jList1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
+        imgs.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                imgsMouseClicked(evt);
+            }
         });
-        jScrollPane1.setViewportView(jList1);
+        jScrollPane1.setViewportView(imgs);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -164,7 +205,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 Photosets list = fl.getPhotosetsInterface().getList(autorizacionesFlickr.getUserID());
                 photosets = list.getPhotosets();
                 photosets.stream().forEach((ps) -> {
-                    this.jComboBox1.addItem(ps.getId() + " - " + ps.getTitle());
+                    ContenedorAlbum contenedor = new ContenedorAlbum(ps.getId(), ps.getTitle());
+                    this.jComboBox1.addItem(contenedor);
                 });
             } catch (FlickrException ex) {
                 Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
@@ -174,11 +216,27 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
         // TODO add your handling code here:
-        if(evt.getStateChange() != ItemEvent.SELECTED) {
-            System.out.println("Leemos imágenes del album");
-            //fl.getPhotosetsInterface().getPhotosetCount("");
-        }
+
     }//GEN-LAST:event_jComboBox1ItemStateChanged
+
+    private void imgsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgsMouseClicked
+        // TODO add your handling code here:
+        if (evt.getClickCount() == 2) {
+            int index = imgs.locationToIndex(evt.getPoint());
+            System.out.println(index);
+            ContenedorFoto cf = (ContenedorFoto) imgs.getModel().getElementAt(index);
+            System.out.println(cf);
+            try {
+                RequestContext.getRequestContext().setAuth(autorizacionesFlickr.getAuth());
+                Photo photo = fl.getPhotosInterface().getPhoto(cf.getImagen().getId());
+                //Photo pp = fl.getPhotosInterface().getInfo(cf.getImagen().getId(), null); //, null)
+                JDialog1 editarImagen = new JDialog1(this, true, photo);
+                editarImagen.setVisible(true);
+            } catch (FlickrException ex) {
+                Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_imgsMouseClicked
 
     /**
      * @param args the command line arguments
@@ -216,11 +274,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JList imgs;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JList jList1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }

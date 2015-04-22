@@ -5,70 +5,27 @@
  */
 package com.mycompany.flickrssdd;
 
-import com.flickr4java.flickr.photos.Photo;
+import java.awt.Graphics2D;
 import java.awt.Image;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 
 /**
  *
  * @author USUARIO100
  */
-public class JDialog1 extends javax.swing.JDialog {
+public class EditarImagen extends javax.swing.JDialog {
 
     /**
      * Creates new form JDialog1
      * @param parent
      * @param modal
      */
-    public JDialog1(java.awt.Frame parent, boolean modal) {
+    public EditarImagen(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         save = false;
-    }
-    public JDialog1(java.awt.Frame parent, boolean modal, Photo photo) {
-        super(parent, modal);
-        try {
-            initComponents();
-            save = false;
-            title.setText(photo.getTitle());
-            description.setText(photo.getDescription());
-            
-            //Descargar foto para verla y luego pasar el PATH
-            URL url = new URL(photo.getUrl());
-            
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            
-            InputStream is = conn.getInputStream();
-            
-            String fileName = "C:\\Users\\USUARIO100\\Desktop\\Porno\\" + photo.getTitle() + "." + photo.getOriginalFormat();
-            OutputStream os = new FileOutputStream(fileName);
-            
-            byte[] b = new byte[8388608];
-            int length;
-            
-            while((length = is.read(b)) != -1){
-                os.write(b, 0, length);
-            }
-            setImage(fileName);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(JDialog1.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(JDialog1.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(JDialog1.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        
     }
 
     public void setImage(String filePath) {
@@ -244,20 +201,21 @@ public class JDialog1 extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JDialog1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditarImagen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JDialog1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditarImagen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JDialog1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditarImagen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JDialog1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditarImagen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                JDialog1 dialog = new JDialog1(new javax.swing.JFrame(), true);
+                EditarImagen dialog = new EditarImagen(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

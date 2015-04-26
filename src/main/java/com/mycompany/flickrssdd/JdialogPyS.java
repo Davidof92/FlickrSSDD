@@ -5,6 +5,8 @@
  */
 package com.mycompany.flickrssdd;
 
+import com.flickr4java.flickr.Flickr;
+
 /**
  *
  * @author USUARIO100
@@ -13,22 +15,41 @@ public class JdialogPyS extends javax.swing.JDialog {
 
     /**
      * Creates new form JdialogPyS
+     * @param parent
+     * @param modal
      */
     public JdialogPyS(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        seguridadCB.removeAllItems();
+        seguridadCB.addItem(new ContenedorSeguridad("Seguro", Flickr.SAFETYLEVEL_SAFE));
+        seguridadCB.addItem(new ContenedorSeguridad("Moderado", Flickr.SAFETYLEVEL_MODERATE));
+        seguridadCB.addItem(new ContenedorSeguridad("Restringido", Flickr.SAFETYLEVEL_RESTRICTED));
+        
+        privacidadCB.removeAllItems();
+        privacidadCB.addItem(new ContenedorPrivacidad("No filtrado", Flickr.PRIVACY_LEVEL_NO_FILTER));
+        privacidadCB.addItem(new ContenedorPrivacidad("Público", Flickr.PRIVACY_LEVEL_PUBLIC));
+        privacidadCB.addItem(new ContenedorPrivacidad("Privado", Flickr.PRIVACY_LEVEL_PRIVATE));
+        privacidadCB.addItem(new ContenedorPrivacidad("Amigos", Flickr.PRIVACY_LEVEL_FRIENDS));
+        privacidadCB.addItem(new ContenedorPrivacidad("Familia", Flickr.PRIVACY_LEVEL_FAMILY));
+        privacidadCB.addItem(new ContenedorPrivacidad("Familiares", Flickr.PRIVACY_LEVEL_FRIENDS_FAMILY));
+        
+        contenidoCB.removeAllItems();
+        contenidoCB.addItem(new ContenedorContenido("Foto", Flickr.CONTENTTYPE_PHOTO));
+        contenidoCB.addItem(new ContenedorContenido("Screenshot", Flickr.CONTENTTYPE_SCREENSHOT));
+        contenidoCB.addItem(new ContenedorContenido("Otros", Flickr.CONTENTTYPE_OTHER));
     }
 
-    public String getPrivacidad(){
-        return (String) privacidadCB.getSelectedItem();
+    public int getPrivacidad(){
+        return ((ContenedorPrivacidad) privacidadCB.getSelectedItem()).flickrEnum;
     }
     
     public String getContenido(){
-        return (String) contenidoCB.getSelectedItem();
+        return ((ContenedorContenido) contenidoCB.getSelectedItem()).flickrEnum;
     }
     
     public String getSeguridad(){
-        return (String) seguridadCB.getSelectedItem();
+        return ((ContenedorSeguridad) seguridadCB.getSelectedItem()).flickrEnum;
     }
     
     
@@ -85,26 +106,25 @@ public class JdialogPyS extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(18, 18, 18)
-                                .addComponent(privacidadCB, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(18, 18, 18)
-                                .addComponent(contenidoCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(42, 42, 42)
-                        .addComponent(jButton1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel3)
-                        .addGap(18, 18, 18)
-                        .addComponent(seguridadCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton1)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel2)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(privacidadCB, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel1)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(contenidoCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGroup(layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(jLabel3)
+                            .addGap(18, 18, 18)
+                            .addComponent(seguridadCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -114,17 +134,17 @@ public class JdialogPyS extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(contenidoCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(28, 28, 28)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(privacidadCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(seguridadCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(30, 30, 30)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
-                .addGap(35, 35, 35))
+                .addContainerGap())
         );
 
         pack();

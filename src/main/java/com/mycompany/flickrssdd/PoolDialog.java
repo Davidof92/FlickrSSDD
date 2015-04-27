@@ -27,6 +27,7 @@ public class PoolDialog extends javax.swing.JDialog {
         super(parent, modal);
         try {
             initComponents();
+            this.setTitle("Seleccionar pool");
             RequestContext.getRequestContext().setAuth(SingleFlickr.getInstance().getAuth().getAuth());
             Collection<Group> groups = SingleFlickr.getInstance().getFlickr().getPoolsInterface().getGroups();
             groups.stream().forEach(g -> {

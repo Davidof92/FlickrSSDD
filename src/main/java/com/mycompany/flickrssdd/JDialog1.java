@@ -6,6 +6,7 @@
 package com.mycompany.flickrssdd;
 
 import com.flickr4java.flickr.photos.Photo;
+import com.flickr4java.flickr.tags.Tag;
 import java.awt.Image;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -27,6 +28,7 @@ public class JDialog1 extends javax.swing.JDialog {
 
     /**
      * Creates new form JDialog1
+     *
      * @param parent
      * @param modal
      */
@@ -35,40 +37,19 @@ public class JDialog1 extends javax.swing.JDialog {
         initComponents();
         save = false;
     }
-    public JDialog1(java.awt.Frame parent, boolean modal, Photo photo) {
+
+    public JDialog1(java.awt.Frame parent, boolean modal, Photo photo, String fileName) {
         super(parent, modal);
-        try {
-            initComponents();
-            save = false;
-            title.setText(photo.getTitle());
-            description.setText(photo.getDescription());
-            
-            //Descargar foto para verla y luego pasar el PATH
-            URL url = new URL(photo.getUrl());
-            
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            
-            InputStream is = conn.getInputStream();
-            
-            String fileName = "C:\\Users\\USUARIO100\\Desktop\\Porno\\" + photo.getTitle() + "." + photo.getOriginalFormat();
-            OutputStream os = new FileOutputStream(fileName);
-            
-            byte[] b = new byte[8388608];
-            int length;
-            
-            while((length = is.read(b)) != -1){
-                os.write(b, 0, length);
-            }
-            setImage(fileName);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(JDialog1.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(JDialog1.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(JDialog1.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        
+        initComponents();
+
+        setImage(fileName);
+        save = false;
+        title.setText(photo.getTitle());
+        description.setText(photo.getDescription());
+        String tagsStr = "";
+        tagsStr = photo.getTags().stream().map((tag) -> ", " + tag.getValue()).reduce(tagsStr, String::concat);
+        tagsStr = tagsStr.replaceFirst(", ", "");
+        tags.setText(tagsStr);
     }
 
     public void setImage(String filePath) {
@@ -79,9 +60,9 @@ public class JDialog1 extends javax.swing.JDialog {
         imagen.setIcon(imageIcon);
         reset();
     }
-    
+
     protected boolean save = false;
-    
+
     public boolean save() {
         return save;
     }

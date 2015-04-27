@@ -17,6 +17,7 @@ public class CrearAlbumDialog extends javax.swing.JDialog {
     public CrearAlbumDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        this.setTitle("Crear album");
     }
     
     public String getNombreAlbum(){

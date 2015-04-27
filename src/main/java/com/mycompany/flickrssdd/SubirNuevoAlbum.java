@@ -15,6 +15,8 @@ import com.flickr4java.flickr.photosets.Photoset;
 import com.flickr4java.flickr.uploader.UploadMetaData;
 import com.flickr4java.flickr.uploader.Uploader;
 import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,9 +31,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BoxLayout;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -63,6 +68,7 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
         List<PhotoTags> pts = new LinkedList<>();
         if (result == JFileChooser.APPROVE_OPTION) {
             CountDownLatch finishUpload = new CountDownLatch(1);
+            //CountDownLatch uploading = new CountDownLatch(1);
             File[] files = fchooser.getSelectedFiles();
             if (files.length > 0) {
                 try {
@@ -76,6 +82,7 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
                     for (File f : files) {
                         jd.setImage(f.getAbsolutePath());
                         System.out.println(f.getAbsolutePath());
+                        jd.setTitle(f.getName());
                         jd.setVisible(true);
                         if (jd.save()) {
                             PhotoTags pt = new PhotoTags();
@@ -126,10 +133,9 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
                                 Logger.getLogger(SubirNuevoAlbum.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         });
-                    }/* else {
-                     System.out.println("No Option");
-                     }*/
+                    }
 
+                    setTitle(crearAlbum.getNombreAlbum());
                     setJScroll(pts);
                 } catch (InterruptedException | FlickrException ex) {
                     Logger.getLogger(SubirNuevoAlbum.class.getName()).log(Level.SEVERE, null, ex);
@@ -141,24 +147,72 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
         }
     }
 
+    private void loadLoader() {
+        final JDialog d = new JDialog();
+        JPanel p1 = new JPanel(new GridBagLayout());
+        p1.add(new JLabel("Please Wait..."), new GridBagConstraints());
+        d.getContentPane().add(p1);
+        d.setSize(100, 100);
+        d.setLocationRelativeTo(this);
+        d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        d.setModal(true);
+
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                
+                for (int x = 0; x <= 100; x += 10) {
+                    final int selection = x;
+                    SwingUtilities.invokeLater(() -> {
+                        System.out.println("long task up to " + selection + "%");
+                    } //do swing work on EDT
+                    );
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                SwingUtilities.invokeLater(() -> {//do swing work on EDT
+                    d.dispose();
+                    System.out.println("Do Some Long Task");
+                });
+            }
+        };
+        t.start();
+        d.setVisible(true);
+    }
+
     private void uploadTimer(UploadInterface updInterface, Set<String> tickets, List<PhotoTags> pts, CountDownLatch finishUpload) {
+        final JDialog d = new JDialog();
+        JPanel p1 = new JPanel(new GridBagLayout());
+        p1.add(new JLabel("Please Wait..."), new GridBagConstraints());
+        d.getContentPane().add(p1);
+        d.setSize(100, 100);
+        d.setLocationRelativeTo(this);
+        d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        d.setModal(true);
+        
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
-            
+
             @Override
             public void run() {
                 try {
                     RequestContext.getRequestContext().setAuth(SingleFlickr.getInstance().getAuth().getAuth());
-                    
+
                     List<Ticket> checkTickets = updInterface.checkTickets(tickets);
                     Long completed = checkTickets.stream().filter(t -> t.hasCompleted()).count();
                     Long notCompleted = pts.size() - completed;
-                    
+
                     String str = "Progreso: " + completed + " ficheros subidos, " + notCompleted + " pendientes";
                     System.out.println(str);
-                    
+
                     if (completed == pts.size()) {
                         finishUpload.countDown();
+                        SwingUtilities.invokeLater(() -> {//do swing work on EDT
+                            d.dispose();
+                            System.out.println("Finish upload");
+                        });
                         this.cancel();
                         timer.cancel();
                     }
@@ -167,6 +221,7 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
                 }
             }
         }, new Date(), 3000l);
+        d.setVisible(true);
     }
 
     private void uploadImageWithMeta(List<PhotoTags> pts, String seguridad, int privacidad, Uploader upd, Set<String> tickets, String contenido) {

@@ -51,13 +51,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      * Creates new form VentanaPrincipal
      */
     public VentanaPrincipal() {
-        try {
-            initComponents();
+        initComponents();
+        //System.out.println(System.getProperty("java.io.tmpdir"));
+        JFrame.setDefaultLookAndFeelDecorated(true); //que nos permite dejar a Substance la decoracion ( por asi decirlo) 
+        SubstanceLookAndFeel.setSkin("org.jvnet.substance.skin.OfficeBlue2007Skin");
+        updateAlbums();
+    }
 
-            JFrame.setDefaultLookAndFeelDecorated(true); //que nos permite dejar a Substance la decoracion ( por asi decirlo) 
-            SubstanceLookAndFeel.setSkin("org.jvnet.substance.skin.OfficeBlue2007Skin");
-            RequestContext requestContext
-                    = RequestContext.getRequestContext();
+    private void updateAlbums() {
+        try {
+            RequestContext requestContext = RequestContext.getRequestContext();
             requestContext.setAuth(SingleFlickr.getInstance().getAuth().getAuth());
 
             Photosets list = SingleFlickr.getInstance().getFlickr().getPhotosetsInterface()
@@ -194,6 +197,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         SubirNuevoAlbum sna = new SubirNuevoAlbum(this, true);
         sna.setVisible(true);
+        updateAlbums();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
@@ -219,7 +223,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
                 InputStream is = conn.getInputStream();
 
-                String fileName = "C:\\Users\\Cristian\\Desktop\\A\\" + photo.getTitle() + "." + photo.getOriginalFormat();
+                String fileName = System.getProperty("java.io.tmpdir") + photo.getTitle() + "." + photo.getOriginalFormat();
                 OutputStream os = new FileOutputStream(fileName);
 
                 byte[] b = new byte[8388608];

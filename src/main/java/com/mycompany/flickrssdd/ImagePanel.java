@@ -126,7 +126,6 @@ public class ImagePanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_titleActionPerformed
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea description;
     private javax.swing.JLabel imagen;

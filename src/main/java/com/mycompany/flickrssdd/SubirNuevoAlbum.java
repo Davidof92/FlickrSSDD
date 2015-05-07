@@ -78,7 +78,7 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
                     String contenido = pys.getContenido();
                     int privacidad = pys.getPrivacidad();
 
-                    JDialog1 jd = new JDialog1(null, true);
+                    MetadataDialog jd = new MetadataDialog(null, true);
                     for (File f : files) {
                         jd.setImage(f.getAbsolutePath());
                         System.out.println(f.getAbsolutePath());
@@ -86,14 +86,15 @@ public class SubirNuevoAlbum extends javax.swing.JDialog {
                         jd.setVisible(true);
                         if (jd.save()) {
                             PhotoTags pt = new PhotoTags();
-                            pt.file = f;
-                            pt.title = jd.obtenerTitulo();
-                            if (pt.title.isEmpty()) {
-                                pt.title = pt.file.getName();
+                            pt.setFile(f);
+                            pt.setTitle(jd.obtenerTitulo());
+                            if (pt.getTitle().isEmpty()) {
+                                pt.setTitle(pt.file.getName());
                             }
-                            pt.description = jd.obtenerDescripcion();
-                            pt.tags = new LinkedList<>();
-                            pt.tags.addAll(Arrays.asList(jd.obtenerTags().split(",")));
+                            pt.setDescription(jd.obtenerDescripcion());
+                            List<String> tags = new LinkedList<>();
+                            tags.addAll(Arrays.asList(jd.obtenerTags().split(",")));
+                            pt.setTags(tags);
                             pts.add(pt);
                         }
                     }

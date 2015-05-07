@@ -10,8 +10,8 @@ package com.mycompany.flickrssdd;
  * @author Cristian
  */
 public class ContenedorPool {
-    String title;
-    String id;
+    protected String title;
+    protected String id;
 
     public ContenedorPool(String title, String id) {
         this.title = title;

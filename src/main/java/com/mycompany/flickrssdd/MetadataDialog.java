@@ -24,7 +24,7 @@ import javax.swing.ImageIcon;
  *
  * @author USUARIO100
  */
-public class JDialog1 extends javax.swing.JDialog {
+public class MetadataDialog extends javax.swing.JDialog {
 
     /**
      * Creates new form JDialog1
@@ -32,13 +32,13 @@ public class JDialog1 extends javax.swing.JDialog {
      * @param parent
      * @param modal
      */
-    public JDialog1(java.awt.Frame parent, boolean modal) {
+    public MetadataDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         save = false;
     }
 
-    public JDialog1(java.awt.Frame parent, boolean modal, Photo photo, String fileName) {
+    public MetadataDialog(java.awt.Frame parent, boolean modal, Photo photo, String fileName) {
         super(parent, modal);
         initComponents();
 
@@ -225,20 +225,21 @@ public class JDialog1 extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JDialog1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MetadataDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JDialog1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MetadataDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JDialog1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MetadataDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JDialog1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MetadataDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                JDialog1 dialog = new JDialog1(new javax.swing.JFrame(), true);
+                MetadataDialog dialog = new MetadataDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

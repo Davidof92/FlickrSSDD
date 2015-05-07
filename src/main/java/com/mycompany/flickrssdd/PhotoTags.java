@@ -13,8 +13,45 @@ import java.util.Collection;
  * @author Cristian
  */
 public class PhotoTags {
-    public File file;
-    public String title;
-    public String description;
-    public Collection<String> tags;
+    protected File file;
+    protected String title;
+    protected String description;
+    protected Collection<String> tags;
+
+    public PhotoTags() {
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Collection<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(Collection<String> tags) {
+        this.tags = tags;
+    }
+    
+    
 }

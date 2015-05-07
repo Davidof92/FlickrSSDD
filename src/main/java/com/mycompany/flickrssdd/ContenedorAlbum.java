@@ -11,8 +11,8 @@ package com.mycompany.flickrssdd;
  */
 public class ContenedorAlbum {
     
-    public String id;
-    public String titulo;
+    protected String id;
+    protected String titulo;
 
     public ContenedorAlbum(String id, String titulo) {
         this.id = id;

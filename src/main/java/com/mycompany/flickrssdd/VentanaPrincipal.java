@@ -53,7 +53,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     public VentanaPrincipal() {
         initComponents();
         //System.out.println(System.getProperty("java.io.tmpdir"));
-        JFrame.setDefaultLookAndFeelDecorated(true); //que nos permite dejar a Substance la decoracion ( por asi decirlo) 
+        JFrame.setDefaultLookAndFeelDecorated(true);    // Activamos decoración del lock and feel de Swing
         SubstanceLookAndFeel.setSkin("org.jvnet.substance.skin.OfficeBlue2007Skin");
         updateAlbums();
     }
@@ -232,7 +232,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 while ((length = is.read(b)) != -1) {
                     os.write(b, 0, length);
                 }
-                JDialog1 editarImagen = new JDialog1(this, true, photo, fileName);
+                MetadataDialog editarImagen = new MetadataDialog(this, true, photo, fileName);
                 editarImagen.setVisible(true);
                 if (editarImagen.save()) {
                     RequestContext.getRequestContext().setAuth(SingleFlickr.getInstance().getAuth().getAuth());
@@ -247,10 +247,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     });
                     RequestContext.getRequestContext().setAuth(SingleFlickr.getInstance().getAuth().getAuth());
                     SingleFlickr.getInstance().getFlickr().getPhotosInterface().addTags(photo.getId(), editarImagen.obtenerTags().split(","));
-                    /*Collection<String> col = new LinkedList<>();
-                     col.addAll(Arrays.asList(editarImagen.obtenerTags().split(",")));
-                     Tag t = new Tag();
-                     photo.setTags(col);*/ //photo.setTags(Arrays.asList(editarImagen.obtenerTags().split(",")));
                 }
             } catch (FlickrException ex) {
                 Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);

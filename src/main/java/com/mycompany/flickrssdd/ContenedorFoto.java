@@ -13,8 +13,8 @@ import com.flickr4java.flickr.photos.Photo;
  */
 public class ContenedorFoto {
     
-    public String title;
-    public Photo imagen;
+    protected String title;
+    protected Photo imagen;
 
     public ContenedorFoto(String title, Photo imagen) {
         this.title = title;

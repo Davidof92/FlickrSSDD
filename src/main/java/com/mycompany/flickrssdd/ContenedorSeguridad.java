@@ -10,8 +10,8 @@ package com.mycompany.flickrssdd;
  * @author Cristian
  */
 public class ContenedorSeguridad {
-    String title;
-    String flickrEnum;
+    protected String title;
+    protected String flickrEnum;
 
     public ContenedorSeguridad(String title, String flickrEnum) {
         this.title = title;
